@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>مدير الاشتراكات والديون</title>
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+</head>
+<body>
+  <div id="toast-container"></div>
+
+  <div id="login-page">
+      <div class="container">
+        <div id="firebase-login-container">
+            <h2><i class="fas fa-user-lock"></i> تسجيل الدخول</h2>
+            <p class="note">استخدم 
+حسابك للوصول إلى بياناتك من أي جهاز.</p>
+ 
+            <div id="firebase-login-error" class="error-message"></div>
+            <label for="firebase-email">البريد الإلكتروني:</label>
+            <input type="email" id="firebase-email" placeholder="أدخل بريدك الإلكتروني">
+            <label for="firebase-password">كلمة المرور:</label>
+            <input type="password" id="firebase-password" placeholder="أدخل كلمة المرور">
+            <button id="firebaseLoginBtn" class="btn-primary"><span class="btn-text">دخول</span><i class="fas fa-spinner 
+fa-spin d-none"></i></button>
+     
+       <p class="auth-toggle">ليس لديك حساب؟ <a href="#" id="show-fb-signup">إنشاء حساب جديد</a></p>
+        </div>
+        <div id="firebase-signup-container" style="display: none;">
+            <h2>إنشاء حساب جديد</h2>
+            <div id="firebase-signup-error" class="error-message"></div>
+            <label for="firebase-signup-name">اسم العرض:</label>
+            <input type="text" id="firebase-signup-name" placeholder="الاسم الذي سيظهر في النظام">
+            <label for="firebase-signup-email">البريد الإلكتروني:</label>
+  
+           <input type="email" id="firebase-signup-email" placeholder="بريدك الإلكتروني">
+            <label for="firebase-signup-password">كلمة المرور:</label>
+            <input type="password" id="firebase-signup-password" placeholder="٦ أحرف على الأقل">
+            <button id="firebaseSignupBtn" class="btn-primary"><span class="btn-text">إنشاء</span><i class="fas fa-spinner fa-spin d-none"></i></button>
+            <p class="auth-toggle">لديك حساب بالفعل؟ <a href="#" id="show-fb-login">تسجيل الدخول</a></p>
+        </div>
+      </div>
+      <button id="login-install-btn" class="btn-secondary" style="margin-top: 20px; width: 90%; max-width: 500px; margin-left: auto; margin-right: auto;">
+          <i class="fas fa-download"></i>
+          <span class="btn-text">تثبيت التطبيق</span>
+      </button>
+      </div>
+
+  <div id="main-content" style="display: none;">
+    <div class="header">
+        <div class="header-left">
+            <button id="theme-select-btn" class="theme-btn" title="تغيير المظهر"><i class="fas fa-palette"></i></button>
+            <button id="backToAccountsBtn" class="header-action-btn d-none" title="العودة لاختيار الحسابات"><i class="fas fa-arrow-left"></i></button>
+            <div class="user-info" style="display: none;">
+         
+               <span id="firebase-user-email"></span>
+            </div>
+        </div>
+        <div class="header-right">
+            <button id="install-btn" class="header-action-btn" aria-label="تثبيت التطبيق" title="تثبيت التطبيق على جهازك"><i class="fas fa-download"></i></button>
+            <button id="refreshBtn" class="header-action-btn" aria-label="تحديث البيانات" title="تحديث قائمة المشتركين"><i class="fas fa-sync-alt"></i></button>
+            <button id="logoutBtn" class="header-action-btn logout-btn" aria-label="تسجيل الخروج" title="الخروج من حسابك"><i class="fas fa-sign-out-alt"></i></button>
+        </div>
+    
+ </div>
+    
+    
+ <div id="connection-hub" class="container">
+        <h2><i class="fas fa-users-cog"></i> مجلس الحسابات</h2>
+        <div id="account-list">
+        </div>
+        <button id="show-add-account-modal-btn" class="btn-primary" style="margin-top: 15px;"><i class="fas fa-plus"></i> إضافة حساب Earthlink جديد</button>
+    </div>
+
+    <div id="app-interface" class="d-none">
+      <div class="tab-buttons">
+        <button id="dashboard-tab-btn" class="active-tab">الرئيسية</button>
+        <button id="subscription-tab-btn">اشتراك</button>
+      
+   <button id="payment-tab-btn">تسديد</button>
+      
+   <button id="debts-tab-btn">الديون</button>
+      </div>
+
+      <div id="dashboard-section">
+          <div class="container">
+              <h2><i class="fas fa-tachometer-alt"></i> لوحة التحكم</h2>
+              <div class="dashboard-grid">
+                  <div 
+ class="info-card">
+          
+             <i class="fas fa-users"></i>
+                      <div class="info-card-content">
+                          <span class="info-card-title">إجمالي المشتركين</span>
+                         
+  <span id="total-subs-stat" class="info-card-value">...</span>
+      
+                 </div>
+                  </div>
+                  <div class="info-card">
+                      <i class="fas fa-file-invoice-dollar"></i>
+              
+         
+ <div class="info-card-content">
+                          <span class="info-card-title">عدد المدينين</span>
+                          <span id="total-debtors-stat" class="info-card-value">...</span>
+                      </div>
+             
+      </div>
+  
+                 <div class="info-card total-debt-card">
+                       <i class="fas fa-dollar-sign"></i>
+                      <div class="info-card-content">
+                          <span 
+ class="info-card-title">إجمالي الديون</span>
+     
+                      <span id="total-debt-amount-stat" class="info-card-value">...</span>
+                      </div>
+                  </div>
+              </div>
+              <hr class="separator">
+  
+      
+        <div class="charts-container">
+                  <div class="chart-card">
+                      <h3>أكبر 5 مدينين</h3>
+                      <canvas id="topDebtorsChart"></canvas>
+                  </div>
+   
+     
+        </div>
+              <hr class="separator">
+              <div class="transactions-container">
+                  <h3><i class="fas fa-history"></i> آخر 10 معاملات</h3>
+                  <div id="transactions-log"></div>
+              </div>
+   
+    
+     </div>
+      </div>
+
+      <div id="subscription-section" style="display: none;">
+          <div class="container">
+            <h2>ادخال معلومات المشترك</h2>
+            <label for="nameSelect-search">اسم المشترك:</label>
+            <div class="searchable-select" id="nameSelect-container">
+                <input type="text" class="search-input" id="nameSelect-search" placeholder="-- ابحث واختر مشترك --" autocomplete="off" data-value="">
+  
+               <i class="fas fa-chevron-down"></i>
+                <div class="options-list"></div>
+            </div>
+
+            <label for="amount">مبلغ الاشتراك:</label>
+            
+ <select id="amount">
+                <option value="30">30</option>
+          
+       <option value="40">40</option>
+                <option value="50">50</option>
+                <option value="60">60</option>
+                <option value="100">100</option>
+            </select>
+  
+           <button id="displayBtn" class="btn-primary"><i class="fas fa-eye"></i> عرض البيانات</button>
+          </div>
+ 
+          <div class="card" id="resultCard" style="display: none;">
+            <h3>معلومات المشترك</h3>
+            <div class="card-item"><div class="label"><i class="fas fa-user"></i> اسم المشترك:</div><p id="resName"></p></div>
+            <div class="card-item"><div class="label"><i class="fas fa-box"></i> نوع الاشتراك:</div><p id="resAccountName"></p></div>
+            <div class="card-item"><div class="label"><i class="fas fa-calendar-plus"></i> تاريخ التفعيل:</div><p id="resStart"></p></div>
+            <div class="card-item"><div class="label"><i class="fas fa-calendar-minus"></i> 
+ تاريخ الانتهاء:</div><p id="resEnd"></p></div>
+            <div class="card-item"><div class="label"><i class="fas fa-dollar-sign"></i> مبلغ الاشتراك:</div><p id="resAmount"></p></div>
+            <div class="card-item debt-item"><div class="label"><i class="fas fa-money-bill-wave"></i> الديون المتراكمة:</div><p id="resDebt"></p></div>
+            <div class="note" style="margin-top: 20px;
+ margin-bottom: 0;">ملاحظة: مدة الاشتراك 30 يوم، في حالة صادف الشهر 31 يومًا سوف يُخصم يوم من اشتراكك.</div>
+          </div>
+          
+          <div class="buttons-container" id="subscription-buttons" style="display: none;">
+              <div class="buttons-row">
+                <button class="save-card-btn"><i class="fas fa-save"></i> حفظ البطاقة</button>
+              
+   <button id="shareCardBtn"><i class="fas fa-share-alt"></i> مشاركة البطاقة</button>
+              </div>
+              <button id="renewAndDebtBtn" class="btn-action"><i class="fas fa-sync-alt"></i> تجديد وإضافة كدين</button>
+          </div>
+          </div>
+        
+      <div id="payment-section" style="display: none;">
+        <div class="container payment-container">
+      
+     
+   <h2>تسديد الاشتراك</h2>
+            <label for="paymentNameSelect-search">اسم المشترك:</label>
+            <div class="searchable-select" id="paymentNameSelect-container">
+                <input type="text" class="search-input" id="paymentNameSelect-search" placeholder="-- ابحث واختر مشترك للتسديد --" autocomplete="off" data-value="">
+                <i class="fas fa-chevron-down"></i>
+                <div class="options-list"></div>
+       
+     </div>
+
+            <label>تاريخ التسديد:</label>
+            <div class="date-inputs"><input type="number" id="paymentDayInput" placeholder="اليوم"><input type="number" id="paymentMonthInput" placeholder="الشهر"></div>
+            <label for="paidFromDebtInput">المبلغ المسدد من الدين:</label>
+            <input type="number" id="paidFromDebtInput" placeholder="المبلغ المسدد من 
+ الدين">
+            <label for="remainingDebtInput">الدين الحالي:</label>
+            <input type="number" 
+ id="remainingDebtInput" placeholder="سيتم عرضه تلقائياً" readonly>
+            <button id="displayPaymentBtn" class="btn-primary"><i class="fas fa-money-check-alt"></i> عرض وتسديد</button>
+        </div>
+           <div class="card payment-result-card" id="paymentCard" style="display: none;">
+            <h3>تم التسديد بنجاح</h3>
+            
+ <div class="payment-card-item"><div class="label"><i class="fas fa-user"></i> الاسم:</div><p id="paymentResName"></p></div>
+            <div class="payment-card-item"><div class="label"><i class="fas fa-calendar-alt"></i> تاريخ التسديد:</div><p id="paymentResDate"></p></div>
+  
+           <div class="payment-card-item"><div class="label"><i class="fas fa-money-bill-wave"></i> المبلغ المسدد:</div><p id="paymentResAmount"></p></div>
+            <div class="payment-card-item debt-item"><div class="label"><i class="fas fa-exclamation-triangle"></i> الدين المتبقي:</div><p id="paymentResDebt" class="red-text"></p></div>
+           </div>
+          <div class="buttons-container" id="payment-buttons" style="display: none;">
+        
+       <button class="save-payment-card-btn"><i class="fas fa-save"></i> حفظ البطاقة</button>
+              <button id="sharePaymentCardBtn"><i class="fas 
+ fa-share-alt"></i> مشاركة البطاقة</button>
+          </div>
+      </div>
+    
+      <div id="debts-section" style="display: none;">
+        <div class="container">
+          <div id="debt-management-container">
+              <div class="debt-header">
+      
+             <h2><i class="fas fa-file-invoice-dollar"></i> إدارة الديون</h2>
+           
+    </div>
+              <div class="add-debt-form">
+                  <h3>إضافة دين جديد</h3>
+                  <label for="debtSubscriberSelect-search">اختر مشترك:</label>
+                  <div class="searchable-select" id="debtSubscriberSelect-container">
+                      
+ <input type="text" class="search-input" id="debtSubscriberSelect-search" placeholder="-- ابحث واختر مشترك للدين --" autocomplete="off" data-value="">
+                      <i class="fas fa-chevron-down"></i>
+                      <div class="options-list"></div>
+                  </div>
+
+                  <label for="addDebtAmount">المبلغ المضاف للدين:</label>
+   
+                 <input type="number" id="addDebtAmount" placeholder="أدخل المبلغ المراد إضافته">
+                  <button id="addDebtBtn" class="btn-primary"><i class="fas fa-plus"></i> إضافة الدين</button>
+              </div>
+             
+  <hr class="separator">
+              <h3>قائمة الديون الحالية</h3>
+         
+      <input type="text" id="debtSearchInput" placeholder="ابحث في قائمة الديون الحالية..." class="search-input">
+              <div class="sorting-controls">
+                  <span><i class="fas fa-sort-amount-down"></i> فرز حسب:</span>
+                  <button id="sortByNameBtn" class="sort-btn">الاسم</button>
+   
+               <button id="sortByDebtBtn" class="sort-btn active">الدين الأعلى</button>
+        
+       </div>
+              <div id="debt-list-container"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="addAccountModal" class="modal-overlay">
+    <div class="modal-content">
+      <h3>إضافة حساب Earthlink جديد</h3>
+    
+   <div id="add-account-error-message" class="error-message"></div>
+      <label for="newEarthlinkUsername">اسم مستخدم Earthlink:</label>
+      <input type="text" id="newEarthlinkUsername" placeholder="اسم المستخدم الجديد">
+  
+     <label for="newEarthlinkPassword">كلمة مرور Earthlink:</label>
+      <input type="password" id="newEarthlinkPassword" placeholder="كلمة المرور">
+      <div class="modal-actions">
+        <button id="addAccountBtn" class="btn-primary"><span class="btn-text">إضافة وتجربة</span><i class="fas fa-spinner fa-spin d-none"></i></button>
+        <button class="close-modal-btn btn-secondary">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="editDebtModal" class="modal-overlay">
+       <div 
+ class="modal-content">
+        <h3>تعديل الدين</h3>
+        <p>المشترك: <strong id="modalSubscriberName"></strong></p>
+      
+   <label for="modalDebtAmount">المبلغ الإجمالي الجديد للدين:</label>
+        <input type="number" id="modalDebtAmount" placeholder="أدخل المبلغ الجديد">
+        <div class="modal-actions">
+          <button id="saveModalBtn" class="btn-primary">حفظ</button>
+          <button class="close-modal-btn btn-secondary">إلغاء</button>
+        </div>
+      </div>
+  </div>
+
+  <div id="notesModal" class="modal-overlay">
+   
+    <div class="modal-content">
+          <h3>ملاحظات على المشترك</h3>
+        
+   <p>المشترك: <strong id="notesModalSubscriberName"></strong></p>
+          <label for="modalNotesText">الملاحظات:</label>
+          <textarea id="modalNotesText" rows="4" placeholder="أضف ملاحظات هنا..."></textarea>
+          <div class="modal-actions">
+              <button id="saveNotesModalBtn" class="btn-primary">حفظ الملاحظات</button>
+              <button class="close-modal-btn btn-secondary">إغلاق</button>
+  
+         </div>
+      </div>
+  </div>
+
+  <div id="confirmationModal" class="modal-overlay">
+   
+    <div class="modal-content">
+          <h3>تأكيد الإجراء</h3>
+          <p id="confirmationModalText">هل أنت متأكد؟</p>
+          <div class="modal-actions">
+              <button id="confirmActionBtn" class="btn-primary">تأكيد</button>
+              <button class="close-modal-btn btn-secondary">إلغاء</button>
+      
+       </div>
+      </div>
+  </div>
+
+  <div id="themeModal" class="modal-overlay">
+    
+ <div class="modal-content">
+      <h3>اختر المظهر</h3>
+      <div id="theme-options-container">
+      </div>
+      <div class="modal-actions">
+        <button class="close-modal-btn btn-secondary">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
