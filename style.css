@@ -131,7 +131,7 @@ font-size: 15px; }
 .tab-buttons {
   display: flex;
   justify-content: center;
-width: 90%;
+  width: 90%;
   max-width: 500px;
   margin-left: auto;
   margin-right: auto;
@@ -140,7 +140,7 @@ width: 90%;
 }
 .tab-buttons button {
   background-color: transparent;
-border: none;
+  border: none;
   border-bottom: 3px solid transparent;
   color: var(--label-color);
   padding: 10px 12px;
@@ -148,7 +148,7 @@ border: none;
   border-radius: 0;
   cursor: pointer;
   font-size: 15px;
-font-family: var(--font-family);
+  font-family: var(--font-family);
   transition: color 0.3s, border-bottom-color 0.3s;
   font-weight: 500;
 }
@@ -202,33 +202,40 @@ transition: color 0.3s; }
 
 /* ===== كود التثبيت المضاف ===== */
 #install-btn {
-    display: none; /* يتم إخفاؤه مبدئياً وسيتم إظهاره عبر الجافاسكريبت */
+    display: none;
+    /* يتم إخفاؤه مبدئياً وسيتم إظهاره عبر الجافاسكريبت */
 }
 /* ========================== */
 
-.auth-toggle { text-align: center; margin-top: 20px; font-size: 14px; color: var(--label-color); }
+.auth-toggle { text-align: center; margin-top: 20px; font-size: 14px; color: var(--label-color);
+}
 .auth-toggle a { color: var(--primary-color);
 text-decoration: none; font-weight: bold; }
 
-#toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column;
+#toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+z-index: 9999; display: flex; flex-direction: column;
 align-items: center; gap: 10px; }
-.toast { padding: 12px 20px; border-radius: 8px; color: white; font-size: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+.toast { padding: 12px 20px; border-radius: 8px; color: white;
+font-size: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 opacity: 0; transition: opacity 0.3s, transform 0.3s; transform: translateY(-20px); }
-.toast.show { opacity: 1; transform: translateY(0); }
+.toast.show { opacity: 1;
+transform: translateY(0); }
 .toast.success { background-color: #2e7d32;
 }
 .toast.error { background-color: #c62828; }
-.toast.info { background-color: #0277bd; }
+.toast.info { background-color: #0277bd;
+}
 
 /* ### START OF MODIFICATION ### */
 .buttons-container {
   display: flex;
-flex-direction: column; /* Stacks children vertically */
+flex-direction: column;
+/* Stacks children vertically */
   gap: 10px; /* Space between rows */
   width: 90%;
   max-width: 500px;
 margin-top: 20px;
-  margin-left: auto;
+margin-left: auto;
   margin-right: auto;
 }
 .buttons-row {
@@ -413,7 +420,7 @@ color: white; }
 /* Footer Styles */
 .footer-credit {
   text-align: center;
-padding: 15px;
+  padding: 15px;
   margin-top: 30px;
   font-size: 14px;
   color: var(--label-color);
@@ -423,10 +430,28 @@ padding: 15px;
 .footer-credit a {
   color: var(--primary-color);
   text-decoration: none;
-font-weight: bold;
+  font-weight: bold;
   margin-right: 5px;
 }
 
 .footer-credit a:hover {
   text-decoration: underline;
+}
+
+/* --- STYLES FOR DELETED SUBSCRIBER IN DEBT LIST --- */
+.debt-item-row.deleted-subscriber {
+    background-color: rgba(239, 83, 80, 0.1); /* A light red background */
+    border-left: 4px solid var(--danger-color);
+}
+.deleted-tag {
+    display: inline-block;
+    background-color: var(--danger-color);
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-right: 8px; /* Use margin-right for RTL */
+    vertical-align: middle;
+    cursor: help;
 }
